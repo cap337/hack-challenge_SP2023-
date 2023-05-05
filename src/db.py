@@ -26,13 +26,13 @@ class merch(db.Model):
     def serialize(self):
         x = {
             "id": self.id,
+            "sid": self.seller_id,
             "name": self.name,
-            "price": self.price,
-            "general_type": self.general_type,
+            "generalType": self.general_type,
             "description": self.description,
-            "pick_up_time": self.pick_up_time,
-            "pick_up_place": self.pick_up_place,
-            "seller_id": self.seller_id,
+            "price": self.price,
+            "pickupTime": self.pick_up_time,
+            "pickupPlace": self.pick_up_place,
         }
         return x
 
@@ -48,7 +48,7 @@ class user(db.Model):
         self.password = kwargs.get("password")
 
     def serialize(self):
-        return {"id": self.id, "username": self.username}
+        return {"id": self.id, "username": self.username, "pw":self.password}
 
 
 class order(db.Model):
@@ -72,10 +72,11 @@ class order(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "merch_id": self.merch_id,
-            "item_amount": self.item_amount,
-            "buyer_notes": self.buyer_notes,
-            "picked_up": self.picked_up,
-            "payment_received": self.payment_received,
-            "buyer_id": self.buyer_id,
+            "mid": self.merch_id,
+            "bid": self.buyer_id,
+            "notes": self.buyer_notes,
+            "num": self.item_amount,
+            "pickedUp": self.picked_up,
+            "paid": self.payment_received,
+            
         }

@@ -128,20 +128,24 @@ def create_merch():
     pick_up_place = data.get("pick_up_place")
     seller_id = data.get("seller_id")
 
-    new_merch = m(
-        price=price,
-        name=name,
-        general_type=general_type,
-        description=description,
-        pick_up_time=pick_up_time,
-        pick_up_place=pick_up_place,
-        seller_id=seller_id,
-    )
+    try:
+        new_merch = m(
+            price=price,
+            name=name,
+            general_type=general_type,
+            description=description,
+            pick_up_time=pick_up_time,
+            pick_up_place=pick_up_place,
+            seller_id=seller_id,
+        )
 
-    db.session.add(new_merch)
-    db.session.commit()
+        db.session.add(new_merch)
+        db.session.commit()
 
-    return success_response(new_merch.serialize())
+        return success_response(new_merch.serialize())
+    
+    except:
+        return failure_response("malformed post body for create merch")
 
 
 """
@@ -230,10 +234,10 @@ def modify_order(order_id):
     payment_received = data.get("payment_received")
     picked_up = data.get("picked_up")
 
-    if payment_received is not None:
-        order.payment_received = payment_received
-    if picked_up is not None:
-        order.picked_up = picked_up
+    if payment_received:
+        order.payment_received = not order.payment_received
+    if picked_up:
+        order.picked_up = not order.picked_up
 
     db.session.commit()
     return success_response(order.serialize())
