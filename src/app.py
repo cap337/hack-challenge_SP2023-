@@ -63,8 +63,6 @@ def get_user():
         user_list.append(user.serialize())
     return success_response({"users": user_list})
 
-    return failure_response("bad user GETrequest")
-
 
 @app.route("/users/", methods=["POST"])
 def create_user():
@@ -87,18 +85,8 @@ merch routes
 
 @app.route("/merch/", methods=["GET"])
 def get_all_merch():
-    try:
-        data = json.loads(request.data)
-    except:
-        # get all merch
-        merches = m.query.all()
-        merch_list = []
-        for merch in merches:
-            merch_list.append(merch.serialize())
-        return success_response({"merch": merch_list})
-
-    merch_id = data.get("merch_id")
-    seller_id = data.get("seller_id")
+    merch_id = request.headers.get("merch_id")
+    seller_id = request.headers.get("seller_id")
 
     # get one merch by merch_id
     if merch_id is not None:
@@ -117,7 +105,12 @@ def get_all_merch():
             merch_list.append(me.serialize())
         return success_response({"merch": merch_list})
 
-    return failure_response("bad merch GETrequest")
+    # get all merch
+    merches = m.query.all()
+    merch_list = []
+    for merch in merches:
+        merch_list.append(merch.serialize())
+    return success_response({"merch": merch_list})
 
 
 @app.route("/merch/", methods=["POST"])
@@ -155,19 +148,9 @@ order routes
 
 @app.route("/orders/", methods=["GET"])
 def get_all_orders():
-    try:
-        data = json.loads(request.data)
-    except:
-        # get all orders
-        orders = o.query.all()
-        order_list = []
-        for order in orders:
-            order_list.append(order.serialize())
-        return success_response({"orders": order_list})
-
-    order_id = data.get("order_id")
-    merch_id = data.get("merch_id")
-    buyer_id = data.get("buyer_id")
+    order_id = request.headers.get("order_id")
+    merch_id = request.headers.get("merch_id")
+    buyer_id = request.headers.get("buyer_id")
 
     # get one order by order_id
     if order_id is not None:
@@ -196,7 +179,12 @@ def get_all_orders():
             order_list.append(i.serialize())
         return success_response({"order": order_list})
 
-    return failure_response("bad order GETrequest")
+    # get all orders
+    orders = o.query.all()
+    order_list = []
+    for order in orders:
+        order_list.append(order.serialize())
+    return success_response({"orders": order_list})
 
 
 @app.route("/orders/", methods=["POST"])
