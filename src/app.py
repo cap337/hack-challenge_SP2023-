@@ -31,21 +31,48 @@ def hello():
     return success_response({"hello": "world"})
 
 
-@app.route("/users/")
-def get_all_users():
-    users = u.query.all()
-    user_list = []
-    for user in users:
-        user_list.append(user.serialize())
-    return success_response({"users": user_list})
+@app.route("/users/", methods=["GET"])
+def get_user():
+    try:
+        data = json.loads(request.data)
+    except:
+        # get all users
+        users = u.query.all()
+        user_list = []
+        for user in users:
+            user_list.append(user.serialize())
+        return success_response({"users": user_list})
+
+    username = data.get("username")
+    password = data.get("password")
+    id = data.get("id")
+
+    # verify user
+    if username is not None and password is not None:
+        
+        user = u.query.filter_by(username=username, password=password).first()
+        if user is None:
+            return failure_response("verification failed")
+        return success_response(user.serialize())
+
+    # get user by id
+    if id is not None:
+        user = u.query.filter_by(id=id).first()
+        if user is None:
+            return failure_response("user not found")
+        return success_response(user.serialize())
+    
+    return failure_response("bad user GETrequest")
 
 
+"""
+user POST routes
+"""
 @app.route("/users/", methods=["POST"])
 def create_user():
     data = json.loads(request.data)
     username = data.get("username")
     password = data.get("password")
-    
     if len(u.query.filter_by(username=username).all()) != 0:
         return failure_response("user already exist")
     else:
@@ -54,28 +81,10 @@ def create_user():
         db.session.commit()
     return success_response(new_user.serialize())
 
-@app.route("/users/", methods=["GET"])
-def verify_user():
-    data = json.loads(request.data)
-    username = data.get("username")
-    password = data.get("password")
-    
-    if len(u.query.filter_by(username=username,password=password).all()) != 0:
-        user = u.query.filter_by(username=username,password=password).all()
-        return success_response(user.serialize())
-    else:
-        return failure_response("user already exist")
+"""
+merch routes
+"""
 
-@app.route("/users/", methods=["GET"])
-def get_user_by_id():
-    data = json.loads(request.data)
-    id = data.get("id")
-    
-    if len(u.query.filter_by(id=id)) != 0:
-        user = u.query.filter_by(id=id).all()
-        return success_response(user.serialize())
-    else:
-        return failure_response("user already exist")
 
 @app.route("/merch/")
 def get_all_merch():
@@ -109,6 +118,7 @@ def add_merch(sid):
 
     return success_response(new_merch.serialize())
 
+
 @app.route("/orders/")
 def get_all_orders():
     orders = o.query.all()
@@ -116,6 +126,35 @@ def get_all_orders():
     for order in orders:
         order_list.append(order.serialize())
     return success_response({"orders": order_list})
+
+
+@app.route("/orders/", methods=["POST"])
+def create_order():
+    data = json.loads(request.data)
+    merch_id = data.get("merch_id")
+    buyer_id = data.get("buyer_id")
+    buyer_notes = data.get("buyer_notes")
+    item_amount = data.get("item_amount")
+    if (
+        merch_id is None
+        or buyer_id is None
+        or buyer_notes is None
+        or item_amount is None
+    ):
+        return failure_response("malformed json body")
+
+    new_order = o(
+        merch_id=merch_id,
+        buyer_id=buyer_id,
+        buyer_notes=buyer_notes,
+        item_amount=item_amount,
+        payment_received=False,
+        picked_up=False,
+    )
+    db.session.add(new_order)
+    db.session.commit()
+    return success_response(new_order.serialize())
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

@@ -53,6 +53,7 @@ class order(db.Model):
     picked_up = db.Column(db.Boolean, nullable=False)
     payment_received = db.Column(db.Boolean, nullable=False)
     buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    merch_id = db.Column(db.Integer, db.ForeignKey("merch.id"), nullable=False)
 
     def __init__(self, **kwargs):
         self.buyer_notes = kwargs.get("buyer_notes")
@@ -60,10 +61,13 @@ class order(db.Model):
         self.picked_up = kwargs.get("picked_up")
         self.payment_received = kwargs.get("payment_received")
         self.buyer_id = kwargs.get("buyer_id")
+        self.merch_id = kwargs.get("merch_id")
 
     def serialize(self):
         return {
             "id": self.id,
+            "merch_id": self.merch_id,
+            "item_amount": self.item_amount,
             "buyer_notes": self.buyer_notes,
             "picked_up": self.picked_up,
             "payment_received": self.payment_received,
