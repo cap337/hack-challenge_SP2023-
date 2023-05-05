@@ -93,6 +93,7 @@ def get_all_merch():
     try:
         data = json.loads(request.data)
     except:
+        # get all merch
         merches = m.query.all()
         merch_list = []
         for merch in merches:
@@ -109,6 +110,7 @@ def get_all_merch():
             return failure_response("merch not found")
         return success_response(merch.serialize())
 
+    # get all merch by seller_id
     if seller_id is not None:
         merch = m.query.filter_by(seller_id=seller_id).all()
         if merch is None:
@@ -154,14 +156,50 @@ order routes
 """
 
 
-@app.route("/orders/")
+@app.route("/orders/", methods=["GET"])
 def get_all_orders():
-    orders = o.query.all()
-    order_list = []
-    for order in orders:
-        order_list.append(order.serialize())
-    return success_response({"orders": order_list})
-
+    try: 
+        data = json.loads(request.data)
+    except:
+        # get all orders
+        orders = o.query.all()
+        order_list = []
+        for order in orders:
+            order_list.append(order.serialize())
+        return success_response({"orders": order_list})
+    
+    order_id = data.get("order_id")
+    merch_id = data.get("merch_id")
+    buyer_id = data.get("buyer_id")
+    
+    # get one order by order_id
+    if order_id is not None:
+        order = o.query.filter_by(id=order_id).first()
+        if order is None:
+            return failure_response("order not found")
+        return success_response(order.serialize())
+    
+    # get all orders by merch_id
+    if merch_id is not None:
+        order = o.query.filter_by(merch_id=merch_id).all()
+        if order is None:
+            return failure_response("no orders under the merch")
+        order_list = []
+        for i in order:
+            order_list.append(i.serialize())
+        return success_response({"order": order_list})
+    
+    # get all orders by buyer_id
+    if buyer_id is not None:
+        order = o.query.filter_by(buyer_id=buyer_id).all()
+        if order is None:
+            return failure_response("no orders under the buyer")
+        order_list = []
+        for i in order:
+            order_list.append(i.serialize())
+        return success_response({"order": order_list})
+    
+    return failure_response("bad order GETrequest")
 
 @app.route("/orders/", methods=["POST"])
 def create_order():
@@ -177,7 +215,6 @@ def create_order():
         or item_amount is None
     ):
         return failure_response("malformed json body")
-
     new_order = o(
         merch_id=merch_id,
         buyer_id=buyer_id,
@@ -189,6 +226,33 @@ def create_order():
     db.session.add(new_order)
     db.session.commit()
     return success_response(new_order.serialize())
+
+@app.route("/orders/<int:order_id>", methods=["POST"])
+def modify_order(order_id):
+    order = o.query.filter_by(id=order_id).first()
+    if order is None:
+        return failure_response("order does not exist")
+    
+    data = json.loads(request.data)
+    payment_received = data.get("payment_received")
+    picked_up = data.get("picked_up")
+
+    if payment_received is not None :
+        order.payment_received = payment_received
+    if picked_up is not None:
+        order.picked_up = picked_up
+    
+    db.session.commit()
+    return success_response(order.serialize())
+    
+@app.route("/orders/<int:order_id>", methods=["DELETE"])
+def delete_order(order_id):
+    order = o.query.filter_by(id=order_id).first()
+    if order is None:
+        return failure_response("order does not exist")
+    db.session.delete(order)
+    db.session.commit()
+    return success_response(order.serialize())
 
 
 if __name__ == "__main__":
