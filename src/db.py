@@ -35,16 +35,14 @@ class user(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String, nullable=False)
-    hashed_password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
 
     def __init__(self, **kwargs):
         self.username = kwargs.get("username")
+        self.password = kwargs.get("password")
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "username": self.username
-        }
+        return {"id": self.id, "username": self.username}
 
 
 class order(db.Model):
@@ -62,12 +60,12 @@ class order(db.Model):
         self.picked_up = kwargs.get("picked_up")
         self.payment_received = kwargs.get("payment_received")
         self.buyer_id = kwargs.get("buyer_id")
-        
+
     def serialize(self):
         return {
             "id": self.id,
             "buyer_notes": self.buyer_notes,
             "picked_up": self.picked_up,
             "payment_received": self.payment_received,
-            "buyer_id":self.buyer_id
+            "buyer_id": self.buyer_id,
         }

@@ -44,17 +44,38 @@ def get_all_users():
 def create_user():
     data = json.loads(request.data)
     username = data.get("username")
-    print("here")
-    print(len(u.query.filter_by(username=username).all()))
-    print("here2")
+    password = data.get("password")
+    
     if len(u.query.filter_by(username=username).all()) != 0:
         return failure_response("user already exist")
     else:
-        new_user = u(username=username)
+        new_user = u(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
-        return success_response(new_user.serialize())
+    return success_response(new_user.serialize())
 
+@app.route("/users/", methods=["GET"])
+def verify_user():
+    data = json.loads(request.data)
+    username = data.get("username")
+    password = data.get("password")
+    
+    if len(u.query.filter_by(username=username,password=password).all()) != 0:
+        user = u.query.filter_by(username=username,password=password).all()
+        return success_response(user.serialize())
+    else:
+        return failure_response("user already exist")
+
+@app.route("/users/", methods=["GET"])
+def get_user_by_id():
+    data = json.loads(request.data)
+    id = data.get("id")
+    
+    if len(u.query.filter_by(id=id)) != 0:
+        user = u.query.filter_by(id=id).all()
+        return success_response(user.serialize())
+    else:
+        return failure_response("user already exist")
 
 @app.route("/merch/")
 def get_all_merch():
