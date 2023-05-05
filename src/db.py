@@ -6,7 +6,9 @@ db = SQLAlchemy()
 class merch(db.Model):
     __tablename__ = "merch"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
     price = db.Column(db.Integer, nullable=False)
+    general_type = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
     pick_up_time = db.Column(db.String, nullable=False)
     pick_up_place = db.Column(db.String, nullable=False)
@@ -14,6 +16,8 @@ class merch(db.Model):
 
     def __init__(self, **kwargs):
         self.price = kwargs.get("price")
+        self.name = kwargs.get("name")
+        self.general_type = kwargs.get("general_type")
         self.description = kwargs.get("description")
         self.pick_up_time = kwargs.get("pick_up_time")
         self.pick_up_place = kwargs.get("pick_up_place")
@@ -22,7 +26,9 @@ class merch(db.Model):
     def serialize(self):
         x = {
             "id": self.id,
+            "name": self.name,
             "price": self.price,
+            "general_type": self.general_type,
             "description": self.description,
             "pick_up_time": self.pick_up_time,
             "pick_up_place": self.pick_up_place,

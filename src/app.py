@@ -31,6 +31,11 @@ def hello():
     return success_response({"hello": "world"})
 
 
+"""
+user routes
+"""
+
+
 @app.route("/users/", methods=["GET"])
 def get_user():
     try:
@@ -49,7 +54,6 @@ def get_user():
 
     # verify user
     if username is not None and password is not None:
-        
         user = u.query.filter_by(username=username, password=password).first()
         if user is None:
             return failure_response("verification failed")
@@ -61,13 +65,10 @@ def get_user():
         if user is None:
             return failure_response("user not found")
         return success_response(user.serialize())
-    
+
     return failure_response("bad user GETrequest")
 
 
-"""
-user POST routes
-"""
 @app.route("/users/", methods=["POST"])
 def create_user():
     data = json.loads(request.data)
@@ -81,32 +82,61 @@ def create_user():
         db.session.commit()
     return success_response(new_user.serialize())
 
+
 """
 merch routes
 """
 
 
-@app.route("/merch/")
+@app.route("/merch/", methods=["GET"])
 def get_all_merch():
-    merches = m.query.all()
-    merch_list = []
-    for merch in merches:
-        merch_list.append(merch.serialize())
+    try:
+        data = json.loads(request.data)
+    except:
+        merches = m.query.all()
+        merch_list = []
+        for merch in merches:
+            merch_list.append(merch.serialize())
+        return success_response({"merch": merch_list})
 
-    return success_response({"merch": merch_list})
+    merch_id = data.get("merch_id")
+    seller_id = data.get("seller_id")
+
+    # get one merch by merch_id
+    if merch_id is not None:
+        merch = m.query.filter_by(id=merch_id).first()
+        if merch is None:
+            return failure_response("merch not found")
+        return success_response(merch.serialize())
+
+    if seller_id is not None:
+        merch = m.query.filter_by(seller_id=seller_id).all()
+        if merch is None:
+            return failure_response("no merch is sold by the seller")
+        merch_list = []
+        for me in merch:
+            merch_list.append(me.serialize())
+        return success_response({"merch": merch_list})
+
+    return failure_response("bad merch GETrequest")
 
 
-@app.route("/merch/<int:sid>", methods=["POST"])
-def add_merch(sid):
+@app.route("/merch/", methods=["POST"])
+def create_merch():
     data = json.loads(request.data)
+
     price = data.get("price")
+    name = data.get("name")
+    general_type = data.get("general_type")
     description = data.get("description")
     pick_up_time = data.get("pick_up_time")
     pick_up_place = data.get("pick_up_place")
-    seller_id = sid
+    seller_id = data.get("seller_id")
 
     new_merch = m(
         price=price,
+        name=name,
+        general_type=general_type,
         description=description,
         pick_up_time=pick_up_time,
         pick_up_place=pick_up_place,
@@ -117,6 +147,11 @@ def add_merch(sid):
     db.session.commit()
 
     return success_response(new_merch.serialize())
+
+
+"""
+order routes
+"""
 
 
 @app.route("/orders/")
