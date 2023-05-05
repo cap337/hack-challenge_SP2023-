@@ -5,3 +5,4 @@ calorie.db
 venv
 venv/
 instance/
+.DS_Store
