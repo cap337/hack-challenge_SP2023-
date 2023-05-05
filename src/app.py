@@ -7,7 +7,6 @@ from db import user as u
 
 
 
-
 app = Flask(__name__)
 db_filename = "merch.db"
 
