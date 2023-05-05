@@ -51,6 +51,7 @@ def get_user():
 
     # get user by id
     if id is not None:
+        id = int(id)
         user = u.query.filter_by(id=id).first()
         if user is None:
             return failure_response("user not found")
@@ -90,6 +91,7 @@ def get_all_merch():
 
     # get one merch by merch_id
     if merch_id is not None:
+        merch_id = int(merch_id)
         merch = m.query.filter_by(id=merch_id).first()
         if merch is None:
             return failure_response("merch not found")
@@ -97,6 +99,7 @@ def get_all_merch():
 
     # get all merch by seller_id
     if seller_id is not None:
+        seller_id = int(seller_id)
         merch = m.query.filter_by(seller_id=seller_id).all()
         if merch is None:
             return failure_response("no merch is sold by the seller")
@@ -154,6 +157,7 @@ def get_all_orders():
 
     # get one order by order_id
     if order_id is not None:
+        order_id = int(order_id)
         order = o.query.filter_by(id=order_id).first()
         if order is None:
             return failure_response("order not found")
@@ -161,6 +165,7 @@ def get_all_orders():
 
     # get all orders by merch_id
     if merch_id is not None:
+        merch_id = int(merch_id)
         order = o.query.filter_by(merch_id=merch_id).all()
         if order is None:
             return failure_response("no orders under the merch")
@@ -171,6 +176,7 @@ def get_all_orders():
 
     # get all orders by buyer_id
     if buyer_id is not None:
+        buyer_id = int(buyer_id)
         order = o.query.filter_by(buyer_id=buyer_id).all()
         if order is None:
             return failure_response("no orders under the buyer")
