@@ -21,10 +21,6 @@ POST /merch
 `{all fields except for id of merch db}`
 create one new merch in merch database 
 
-DELETE /merch
-`{<merch_id>}`
-delete merch by merch_id
-
 GET /order
 `none`
 get all orders (not for using but for testing purposes)
