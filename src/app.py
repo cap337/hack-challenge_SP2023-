@@ -38,19 +38,9 @@ user routes
 
 @app.route("/users/", methods=["GET"])
 def get_user():
-    try:
-        data = json.loads(request.data)
-    except:
-        # get all users
-        users = u.query.all()
-        user_list = []
-        for user in users:
-            user_list.append(user.serialize())
-        return success_response({"users": user_list})
-
-    username = data.get("username")
-    password = data.get("password")
-    id = data.get("id")
+    username = request.headers.get("username")
+    password = request.headers.get("password")
+    id = request.headers.get("id")
 
     # verify user
     if username is not None and password is not None:
@@ -65,6 +55,13 @@ def get_user():
         if user is None:
             return failure_response("user not found")
         return success_response(user.serialize())
+
+    # get all users
+    users = u.query.all()
+    user_list = []
+    for user in users:
+        user_list.append(user.serialize())
+    return success_response({"users": user_list})
 
     return failure_response("bad user GETrequest")
 
@@ -158,7 +155,7 @@ order routes
 
 @app.route("/orders/", methods=["GET"])
 def get_all_orders():
-    try: 
+    try:
         data = json.loads(request.data)
     except:
         # get all orders
@@ -167,18 +164,18 @@ def get_all_orders():
         for order in orders:
             order_list.append(order.serialize())
         return success_response({"orders": order_list})
-    
+
     order_id = data.get("order_id")
     merch_id = data.get("merch_id")
     buyer_id = data.get("buyer_id")
-    
+
     # get one order by order_id
     if order_id is not None:
         order = o.query.filter_by(id=order_id).first()
         if order is None:
             return failure_response("order not found")
         return success_response(order.serialize())
-    
+
     # get all orders by merch_id
     if merch_id is not None:
         order = o.query.filter_by(merch_id=merch_id).all()
@@ -188,7 +185,7 @@ def get_all_orders():
         for i in order:
             order_list.append(i.serialize())
         return success_response({"order": order_list})
-    
+
     # get all orders by buyer_id
     if buyer_id is not None:
         order = o.query.filter_by(buyer_id=buyer_id).all()
@@ -198,8 +195,9 @@ def get_all_orders():
         for i in order:
             order_list.append(i.serialize())
         return success_response({"order": order_list})
-    
+
     return failure_response("bad order GETrequest")
+
 
 @app.route("/orders/", methods=["POST"])
 def create_order():
@@ -227,24 +225,26 @@ def create_order():
     db.session.commit()
     return success_response(new_order.serialize())
 
+
 @app.route("/orders/<int:order_id>", methods=["POST"])
 def modify_order(order_id):
     order = o.query.filter_by(id=order_id).first()
     if order is None:
         return failure_response("order does not exist")
-    
+
     data = json.loads(request.data)
     payment_received = data.get("payment_received")
     picked_up = data.get("picked_up")
 
-    if payment_received is not None :
+    if payment_received is not None:
         order.payment_received = payment_received
     if picked_up is not None:
         order.picked_up = picked_up
-    
+
     db.session.commit()
     return success_response(order.serialize())
-    
+
+
 @app.route("/orders/<int:order_id>", methods=["DELETE"])
 def delete_order(order_id):
     order = o.query.filter_by(id=order_id).first()
