@@ -10,17 +10,10 @@
 			"name": "user",
 			"item": [
 				{
-					"name": "get a user",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "get all users",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{   \n    \"id\":1\n}"
-						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/users/",
 							"protocol": "http",
@@ -40,17 +33,16 @@
 					"response": []
 				},
 				{
-					"name": "get all users",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "get user by id",
 					"request": {
 						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"header": [
+							{
+								"key": "id",
+								"value": "1",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://127.0.0.1:8000/users/",
 							"protocol": "http",
@@ -71,16 +63,20 @@
 				},
 				{
 					"name": "verify user",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\":\"ashton\",\n    \"password\":\"12345678\"\n}"
-						},
+						"header": [
+							{
+								"key": "username",
+								"value": "ashton",
+								"type": "text"
+							},
+							{
+								"key": "password",
+								"value": "12345678",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://127.0.0.1:8000/users/",
 							"protocol": "http",
@@ -106,7 +102,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\":\"ashton\",\n    \"password\":\"123456\"\n}"
+							"raw": "{\n    \"username\":\"ashton2\",\n    \"password\":\"12345678\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/users/",
@@ -131,36 +127,6 @@
 		{
 			"name": "merch",
 			"item": [
-				{
-					"name": "get all merch",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/merch/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"merch",
-								""
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "create merch",
 					"request": {
@@ -189,16 +155,45 @@
 					"response": []
 				},
 				{
+					"name": "get all merch",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/merch/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"merch",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "get merch by id",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "merch_id",
+								"value": "2",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"merch_id\":2\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/merch/",
@@ -220,16 +215,15 @@
 				},
 				{
 					"name": "get merch by seller id",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"seller_id\":1\n}"
-						},
+						"header": [
+							{
+								"key": "seller_id",
+								"value": "2",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://127.0.0.1:8000/merch/",
 							"protocol": "http",
@@ -287,7 +281,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"payment_received\":true\n}"
+							"raw": "{\n    \"payment_received\":true,\n    \"picked_up\":true\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/orders/1",
@@ -367,10 +361,16 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "merch_id",
+								"value": "1",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"merch_id\":1\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/orders/",
@@ -397,10 +397,16 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "buyer_id",
+								"value": "1",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"buyer_id\":2\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "http://127.0.0.1:8000/orders/",
